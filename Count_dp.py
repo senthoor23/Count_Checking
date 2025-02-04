@@ -14,8 +14,8 @@ def combine_excel_files(files):
 def main():
     st.title("Excel File Combiner and Validator")
     
-    #main_file_path = st.text_input("Enter the path of the main Excel file:")
-    main_file_path =r"C:\Users\esen\OneDrive\OneDrive - MSCI Office 365\Documents\exercise\count checking.xlsx"
+    main_file_path = st.text_input("Enter the path of the main Excel file:")
+    
     
     
     if main_file_path:
