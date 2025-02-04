@@ -40,30 +40,25 @@ def main():
                     ~filtered_data['FISCAL_YEAR'].isin([2021, 2022])
                 ]
                 
-                count_data = filtered_data.groupby(['RUN_DATE', 'DMX_ISSUER_NAME', 'DMX_ISSUER_ID']).size().reset_index(name='count')
+                count_data = filtered_data.groupby(['RUN_DATE', 'DMX_ISSUER_NAME', 'DMX_ISSUER_ID']).size().reset_index(name='Correct_Count')
+                
+                # Add the 'TOTAL' column from the main file
+                count_data = count_data.merge(main_df[['DMX_ISSUER_ID', 'TOTAL']], on='DMX_ISSUER_ID', how='left')
                 
                 count_data['order'] = count_data['DMX_ISSUER_ID'].apply(lambda x: list(valid_issuer_ids).index(x))
                 count_data = count_data.sort_values(['order', 'RUN_DATE']).drop(columns='order')
                 
-                output_file_path = st.text_input("Enter the path to save the output Excel file:")
+                # Provide the output as a downloadable CSV file
+                csv = count_data.to_csv(index=False)
+                st.download_button(
+                    label="Download output as CSV",
+                    data=csv,
+                    file_name='output.csv',
+                    mime='text/csv',
+                )
                 
-                if output_file_path:
-                    # Remove any extra quotes and spaces
-                    output_file_path = output_file_path.strip().strip('"')
-                    st.write(f"Output file path: {output_file_path}")  # Debugging statement
-                    
-                    if not output_file_path.endswith('.xlsx'):
-                        st.error("Error: The output file path must end with '.xlsx'")
-                        return
-                    
-                    with pd.ExcelWriter(output_file_path, engine='openpyxl') as writer:
-                        count_data.to_excel(writer, sheet_name='NewSheet', index=False)
-                        main_df.to_excel(writer, sheet_name='MainFileData', index=False)
-                    
-                    st.success(f"Result saved to: {output_file_path}")
-                    st.dataframe(count_data)
-                else:
-                    st.warning("Please enter a valid output file path.")
+                st.success("Output generated successfully!")
+                st.dataframe(count_data)
             else:
                 st.warning("No additional files selected for validation.")
         except Exception as e:
