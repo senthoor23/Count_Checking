@@ -6,7 +6,7 @@ def combine_excel_files(files):
     combined_data = pd.DataFrame()
 
     for file in files:
-        df = pd.read_excel(file)
+        df = pd.read_excel(file, engine='openpyxl')  # Specify the engine here
         combined_data = pd.concat([combined_data, df], ignore_index=True)
     
     return combined_data
@@ -18,7 +18,7 @@ def main():
     
     if main_file:
         try:
-            main_df = pd.read_excel(main_file)
+            main_df = pd.read_excel(main_file, engine='openpyxl')  # Specify the engine here
             valid_issuer_ids = main_df['DMX_ISSUER_ID'].unique()
             
             uploaded_files = st.file_uploader("Select additional Excel files", type="xlsx", accept_multiple_files=True)
