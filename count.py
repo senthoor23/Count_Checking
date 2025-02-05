@@ -6,8 +6,11 @@ def combine_excel_files(files):
     combined_data = pd.DataFrame()
 
     for file in files:
-        df = pd.read_excel(file, engine='openpyxl')  # Specify the engine here
-        combined_data = pd.concat([combined_data, df], ignore_index=True)
+        try:
+            df = pd.read_excel(file, engine='openpyxl')  # Specify the engine here
+            combined_data = pd.concat([combined_data, df], ignore_index=True)
+        except Exception as e:
+            st.error(f"An error occurred while reading {file.name}: {e}")
     
     return combined_data
 
