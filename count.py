@@ -6,11 +6,8 @@ def combine_excel_files(files):
     combined_data = pd.DataFrame()
 
     for file in files:
-        try:
-            df = pd.read_excel(file, engine='openpyxl')  # Specify the engine here
-            combined_data = pd.concat([combined_data, df], ignore_index=True)
-        except Exception as e:
-            st.error(f"An error occurred while reading {file.name}: {e}")
+        df = pd.read_excel(file)
+        combined_data = pd.concat([combined_data, df], ignore_index=True)
     
     return combined_data
 
@@ -21,7 +18,7 @@ def main():
     
     if main_file:
         try:
-            main_df = pd.read_excel(main_file, engine='openpyxl')  # Specify the engine here
+            main_df = pd.read_excel(main_file)
             valid_issuer_ids = main_df['DMX_ISSUER_ID'].unique()
             
             uploaded_files = st.file_uploader("Select additional Excel files", type="xlsx", accept_multiple_files=True)
@@ -35,8 +32,8 @@ def main():
                     return
                 
                 filtered_data = combined_data[
-                    (combined_data['DMX_ISSUER_ID'].isin(valid_issuer_ids)) &
-                    (combined_data['VALIDATION'] == 'Validation Needed')
+                    (combined_data['DMX_ISSUER_ID'].isin(valid_issuer_ids)) & 
+                    (combined_data['VALIDATION'].isin(['Validation Needed', 'Update Needed']))
                 ]
                 
                 filtered_data = filtered_data[
